@@ -26,6 +26,9 @@ class Application extends Koa {
     run() {
         this.init();
 
+        this.config = loadConfig(this);
+
+
         const routers = loadExtensions();
         routers.forEach(router => {
             router(this);
@@ -43,6 +46,29 @@ class Application extends Koa {
     }
 }
 
+function loadConfig(app) {
+    let config={};
+
+    let defaultConfig = path.join(process.cwd(), 'config', 'config.default.js');
+    if(fs.existsSync(defaultConfig)){
+        config = require(defaultConfig);
+    }else{
+        throw 'error! config.default.js not exist.'
+    }
+
+    const env = process.env.NODE_ENV;
+    let envConfig = path.join(process.cwd(), 'config', `config.${env}.js`);
+    if(fs.existsSync(envConfig)){
+        let econfig = require(envConfig)(app);
+        config=Object.assign(config, econfig);
+    }else{
+        console.warn(`error! the NODE_ENV is ${env}, but config.${env}.js not exist.`);
+    }
+
+
+    return config;
+}
+
 
 function loadExtensions() {
     const extensions = [];
@@ -58,7 +84,6 @@ function loadExtensions() {
     const routers = [];
     //TODO 还可以考虑实现嵌套
     extensions.forEach(extension => {
-        console.log(extension);
         const routerDir = path.join(extension, 'router.js');
         if (fs.existsSync(routerDir)) {
             const router = require(routerDir);
