@@ -26,9 +26,14 @@ class Application extends Koa {
     run() {
         this.init();
 
-        const localRouter = require(path.join(process.cwd(), 'router'));
-
-        const routers = loadExtensions().concat(localRouter);
+        const routers = loadExtensions();
+        const localRouter = path.join(process.cwd(), 'router');
+        if(fs.existsSync(localRouter)){
+            const router = require(localRouter);
+            if (typeof router === 'function') {
+                routers.push(router);
+            }
+        } 
         routers.forEach(router => {
             router(this);
         })
@@ -50,6 +55,7 @@ function loadExtensions() {
     const extensionsDir = path.join(process.cwd(), 'extensions');
     const extensions = fs.readdirSync(extensionsDir);
     const routers = [];
+    //TODO 还可以考虑实现嵌套
     extensions.forEach(extension => {
         const routerDir = path.join(extensionsDir, extension, 'router.js');
         if (fs.existsSync(routerDir)) {
