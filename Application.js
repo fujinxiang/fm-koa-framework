@@ -40,7 +40,7 @@ class Application extends Koa {
         })
 
         this.listen(3000, () => {
-            console.log('[demo] route-use-middleware is starting at port 3000');
+            console.log('running at http://127.0.0.1:3000');
         });
     }
 }
