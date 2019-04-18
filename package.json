@@ -1,0 +1,29 @@
+{
+  "name": "fkf",
+  "version": "1.0.0",
+  "description": "a koa ioc plugin framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fujinxiang/fm-koa-framework.git"
+  },
+  "keywords": [
+    "koa",
+    "framework"
+  ],
+  "author": "fujinxiang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fujinxiang/fm-koa-framework/issues"
+  },
+  "homepage": "https://github.com/fujinxiang/fm-koa-framework#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "koa-views": "^6.2.0"
+  }
+}
