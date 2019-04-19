@@ -28,11 +28,9 @@ class Application extends Koa {
 
         this.config = loadConfig(this);
 
+        loadExtensions(this);
 
-        const routers = loadExtensions();
-        routers.forEach(router => {
-            router(this);
-        })
+        loadRootRouter(this);
 
         this.use(this.router.routes()).use(this.router.allowedMethods());
 
@@ -47,30 +45,44 @@ class Application extends Koa {
 }
 
 function loadConfig(app) {
+    return loadConfigByDir(process.cwd(), app);
+}
+
+function loadConfigByDir(dir, app) {
     let config={};
 
-    let defaultConfig = path.join(process.cwd(), 'config', 'config.default.js');
+    let defaultConfig = path.join(dir, 'config', 'config.default.js');
     if(fs.existsSync(defaultConfig)){
         config = require(defaultConfig);
     }else{
-        throw 'error! config.default.js not exist.'
+        //如果不是根目录，可以不用提示错误
+        //console.warn(`${defaultConfig} not exist.`); 
     }
 
     const env = process.env.NODE_ENV;
-    let envConfig = path.join(process.cwd(), 'config', `config.${env}.js`);
+    let envConfig = path.join(dir, 'config', `config.${env}.js`);
     if(fs.existsSync(envConfig)){
         let econfig = require(envConfig)(app);
         config=Object.assign(config, econfig);
     }else{
-        console.warn(`error! the NODE_ENV is ${env}, but config.${env}.js not exist.`);
+        //console.warn(`the NODE_ENV is ${env}, but ${envConfig} not exist.`);
     }
-
 
     return config;
 }
 
 
-function loadExtensions() {
+function loadRootRouter(app) {
+    const routerDir = path.join(process.cwd(), 'router.js');
+    if (fs.existsSync(routerDir)) {
+        const router = require(routerDir);
+        if (typeof router === 'function') {
+            router(app);
+        }
+    }
+}
+
+function loadExtensions(app) {
     const extensions = [];
     const extensionsDir = path.join(process.cwd(), 'extensions');
     if (fs.existsSync(extensionsDir)) {
@@ -78,21 +90,22 @@ function loadExtensions() {
         extensions.concat(fs.readdirSync(extensionsDir).map(x => extensions.push(path.join(extensionsDir, x))));
     }
 
-    //将根目录当作一个特殊的插件
-    extensions.push(process.cwd());
-
-    const routers = [];
     //TODO 还可以考虑实现嵌套
     extensions.forEach(extension => {
         const routerDir = path.join(extension, 'router.js');
+        const config = loadConfigByDir(extension, app);
         if (fs.existsSync(routerDir)) {
             const router = require(routerDir);
             if (typeof router === 'function') {
-                routers.push(router);
+                const extensionModule ={
+                    // 此处 {} 是为了避免 app.config 被修改
+                    config: Object.assign({}, app.config, config)
+                }
+                // config 可以做到 controller 里面去，在每次 ctx 中生效。
+                router(app);
             }
         }
     })
-    return routers;
 }
 
 
