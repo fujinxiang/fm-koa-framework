@@ -51,22 +51,22 @@ function loadConfig(app) {
 }
 
 function loadConfigByDir(dir, app) {
-    let config={};
+    let config = {};
 
     let defaultConfig = path.join(dir, 'config', 'config.default.js');
-    if(fs.existsSync(defaultConfig)){
+    if (fs.existsSync(defaultConfig)) {
         config = require(defaultConfig);
-    }else{
+    } else {
         //如果不是根目录，可以不用提示错误
         //console.warn(`${defaultConfig} not exist.`); 
     }
 
     const env = process.env.NODE_ENV;
     let envConfig = path.join(dir, 'config', `config.${env}.js`);
-    if(fs.existsSync(envConfig)){
+    if (fs.existsSync(envConfig)) {
         let econfig = require(envConfig)(app);
-        config=Object.assign(config, econfig);
-    }else{
+        config = Object.assign(config, econfig);
+    } else {
         //console.warn(`the NODE_ENV is ${env}, but ${envConfig} not exist.`);
     }
 
@@ -83,39 +83,39 @@ function loadController(app) {
     const ret = {};
     // tracing the prototype chain
     while (proto !== Object.prototype) {
-      const keys = Object.getOwnPropertyNames(proto);
-      for (const key of keys) {
-        // getOwnPropertyNames will return constructor
-        // that should be ignored
-        if (key === 'constructor') {
-          continue;
+        const keys = Object.getOwnPropertyNames(proto);
+        for (const key of keys) {
+            // getOwnPropertyNames will return constructor
+            // that should be ignored
+            if (key === 'constructor') {
+                continue;
+            }
+            // skip getter, setter & non-function properties
+            const d = Object.getOwnPropertyDescriptor(proto, key);
+            // prevent to override sub method
+            if (!ret.hasOwnProperty(key)) {
+                ret[key] = methodToMiddleware(Controller, key);
+                //   ret[key][FULLPATH] = Controller.prototype.fullPath + '#' + Controller.name + '.' + key + '()';
+            }
         }
-        // skip getter, setter & non-function properties
-        const d = Object.getOwnPropertyDescriptor(proto, key);
-        // prevent to override sub method
-        if (!ret.hasOwnProperty(key)) {
-          ret[key] = methodToMiddleware(Controller, key);
-        //   ret[key][FULLPATH] = Controller.prototype.fullPath + '#' + Controller.name + '.' + key + '()';
-        }
-      }
-      proto = Object.getPrototypeOf(proto);
+        proto = Object.getPrototypeOf(proto);
     }
-    app.controller=ret;
+    app.controller = ret;
     return ret;
 
     function methodToMiddleware(Controller, key) {
         return function classControllerMiddleware(...args) {
-            console.log(args);
-          const controller = new Controller(args[0]);
-          console.log(controller);
-        //   if (!this.app.config.controller || !this.app.config.controller.supportParams) {
-        //     args = [ this ];
-        //   }
-        //   return utils.callFn(controller[key], args, controller);
+            // console.log(args);
+            const controller = new Controller(args[0]);
+            //   console.log(controller);
+            //   if (!this.app.config.controller || !this.app.config.controller.supportParams) {
+            //     args = [ this ];
+            //   }
+            //   return utils.callFn(controller[key], args, controller);
 
-         return callFn(controller[key], args, controller);
+            return callFn(controller[key], args, controller);
         };
-      }
+    }
 }
 
 async function callFn(fn, args, ctx) {
@@ -123,7 +123,7 @@ async function callFn(fn, args, ctx) {
     // if (!is.function(fn)) return;
     // if (is.generatorFunction(fn)) fn = co.wrap(fn);
     return ctx ? fn.call(ctx, ...args) : fn(...args);
-  }
+}
 
 function loadRootRouter(app) {
     const routerDir = path.join(process.cwd(), 'router.js');
@@ -150,7 +150,7 @@ function loadExtensions(app) {
         if (fs.existsSync(routerDir)) {
             const router = require(routerDir);
             if (typeof router === 'function') {
-                const extensionModule ={
+                const extensionModule = {
                     // 此处 {} 是为了避免 app.config 被修改
                     config: Object.assign({}, app.config, config)
                 }
