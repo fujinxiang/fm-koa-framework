@@ -1,3 +1,4 @@
 module.exports={
-    Application: require('./Application')
+    Application: require('./Application'),
+    Controller: require('./Controller')
 }

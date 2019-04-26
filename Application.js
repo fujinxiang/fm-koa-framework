@@ -27,8 +27,10 @@ class Application extends Koa {
         this.init();
 
         this.config = loadConfig(this);
+        loadController(this);
 
         loadExtensions(this);
+
 
         loadRootRouter(this);
 
@@ -71,6 +73,57 @@ function loadConfigByDir(dir, app) {
     return config;
 }
 
+function loadController(app) {
+    const Controller = require('./extensions/origin/controller/home');
+    // const con = Reflect.construct(Controller, [app.ctx], Controller)
+    // console.log(con);
+
+
+    let proto = Controller.prototype;
+    const ret = {};
+    // tracing the prototype chain
+    while (proto !== Object.prototype) {
+      const keys = Object.getOwnPropertyNames(proto);
+      for (const key of keys) {
+        // getOwnPropertyNames will return constructor
+        // that should be ignored
+        if (key === 'constructor') {
+          continue;
+        }
+        // skip getter, setter & non-function properties
+        const d = Object.getOwnPropertyDescriptor(proto, key);
+        // prevent to override sub method
+        if (!ret.hasOwnProperty(key)) {
+          ret[key] = methodToMiddleware(Controller, key);
+        //   ret[key][FULLPATH] = Controller.prototype.fullPath + '#' + Controller.name + '.' + key + '()';
+        }
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+    app.controller=ret;
+    return ret;
+
+    function methodToMiddleware(Controller, key) {
+        return function classControllerMiddleware(...args) {
+            console.log(args);
+          const controller = new Controller(args[0]);
+          console.log(controller);
+        //   if (!this.app.config.controller || !this.app.config.controller.supportParams) {
+        //     args = [ this ];
+        //   }
+        //   return utils.callFn(controller[key], args, controller);
+
+         return callFn(controller[key], args, controller);
+        };
+      }
+}
+
+async function callFn(fn, args, ctx) {
+    args = args || [];
+    // if (!is.function(fn)) return;
+    // if (is.generatorFunction(fn)) fn = co.wrap(fn);
+    return ctx ? fn.call(ctx, ...args) : fn(...args);
+  }
 
 function loadRootRouter(app) {
     const routerDir = path.join(process.cwd(), 'router.js');
