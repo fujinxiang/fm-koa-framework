@@ -18,8 +18,6 @@ class Controller {
         this.app = ctx.app;
 
         this.config = ctx.app.config;
-
-        //   this.service = ctx.service;
     }
 }
 

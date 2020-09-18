@@ -5,7 +5,7 @@ module.exports = (app) => {
 
   router.get('/info', async ( ctx )=>{
     let html = `
-      <h1>this is extension info ${ctx.app.config.serverUrl}</h1>
+      <h1>this is extension info ${app.config.serverUrl}</h1>
     `
     ctx.body = html
   })

@@ -11,6 +11,8 @@ exports.view = {
   },
 };
 
+exports.port = 8080;
+
 exports.session = {
   key: 'connect.magick',
   maxAge: 86400000,

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EN扩展1</title>
+    <meta charset="utf-8" />
+  </head>
+
+  <body>
+    <div>
+      <h2>这是扩展程序1</h2>
+      <input id="textToEn" type="text" placeholder="输入任意文字" />
+      <button onclick="insertToEN();">插入 EN</button>
+
+      <ul>
+        <li onclick="insertMe(this);">这些是预定义文字</li>
+        <li onclick="insertMe(this);">EN5 是一个平台型软件</li>
+        <li onclick="insertMe(this);">EN5 插件化挺不错的</li>
+        <li onclick="insertMe(this);">向 VSCode 学习</li>
+      </ul>
+    </div>
+
+    <script>
+      function insertToEN() {
+        var text = document.getElementById('textToEn').value || '默认文字';
+
+        var data = JSON.stringify({
+          text: text,
+          'font-size': 32,
+          color: '#4ECB78',
+          top: Math.floor(Math.random() * 100) + 50,
+          left: Math.floor(Math.random() * 100) + 50
+        });
+        console.log(data);
+        window.external.InsertText(data);
+      }
+
+      function insertMe(e) {
+        var text = e.innerText || '默认文字';
+
+        var data = JSON.stringify({
+          text: text,
+          'font-size': 32,
+          color: '#4ECB78',
+          top: Math.floor(Math.random() * 100) + 50,
+          left: Math.floor(Math.random() * 100) + 50
+        });
+        console.log(data);
+        window.external.InsertText(data);
+      }
+    </script>
+  </body>
+</html>

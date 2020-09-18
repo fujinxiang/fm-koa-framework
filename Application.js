@@ -31,7 +31,6 @@ class Application extends Koa {
 
         loadExtensions(this);
 
-
         loadRootRouter(this);
 
         this.use(this.router.routes()).use(this.router.allowedMethods());
@@ -40,8 +39,8 @@ class Application extends Koa {
             console.log(err);
         })
 
-        this.listen(3000, () => {
-            console.log('running at http://127.0.0.1:3000');
+        this.listen(this.config.port, () => {
+            console.log(`running at http://127.0.0.1:${this.config.port}`);
         });
     }
 }

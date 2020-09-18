@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>EN扩展2</title>
+	<meta charset="utf-8" />
+</head>
+
+<body>
+    <div>
+        <h2>这是扩展程序2</h2>
+        <input id='textToEn' type='text' placeholder="输入任意文字" />
+        <button onclick="insertToEN();">插入 EN</button>
+
+        <br/>
+        <br/>
+
+        <img src='http://edu.seewo.com/res/head/1/default.png' onclick="insertImage(this.src, 320, 320);"/>
+        <img src='https://s0.seewo.com/cloud-static/easiclass-home/web/dist/img_school1-44998.jpg' onclick="insertImage(this.src, 410, 228);"/>
+        <img src='https://s0.seewo.com/cloud-static/easiclass-home/web/dist/img_school3-b3b2f.jpg' onclick="insertImage(this.src, 410, 228);"/>
+    </div>
+
+    <script>
+    function insertToEN() {
+        var text = document.getElementById('textToEn').value || '默认文字';
+
+        var data = JSON.stringify({
+            text:text,
+            'font-size': 32,
+            'color': '#4ECB78',
+            'top': Math.floor(Math.random() * 100) + 50,
+            'left': Math.floor(Math.random() * 100) + 50,
+        })
+        console.log(data);
+        window.external.InsertText(data);
+    }
+
+    function insertImage(url, width, height) {
+        var url = url || 'http://edu.seewo.com/res/head/1/default.png';
+
+        var data = JSON.stringify({
+            url,
+            width,
+            height,
+            'top': Math.floor(Math.random() * 100) + 50,
+            'left': Math.floor(Math.random() * 100) + 50,
+        })
+        console.log(data);
+        window.external.InsertImage(data);
+    }
+
+    </script>
+</body>
+
+</html>
