@@ -1,6 +1,6 @@
 {
   "name": "fkf",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a koa ioc plugin framework",
   "main": "index.js",
   "files": ["index.js", "Application.js"],
