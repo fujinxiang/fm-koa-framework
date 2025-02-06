@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/fujinxiang/fm-koa-framework#readme",
   "dependencies": {
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.10",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "koa-views": "^6.2.0"
